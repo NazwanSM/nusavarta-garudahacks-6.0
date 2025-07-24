@@ -30,6 +30,7 @@ export const LoginForm: React.FC = () => {
   const handleSignUp = () => {
     // Handle sign up navigation logic here
     console.log('Sign up pressed');
+    router.push('/register');
   };
 
   return (
