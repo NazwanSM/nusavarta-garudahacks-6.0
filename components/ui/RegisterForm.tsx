@@ -1,17 +1,70 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
-import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useAuth } from '../../context/AuthContext';
+import { GoogleSignInService, useGoogleAuth } from '../../services/googleSignInService';
 import { InputField } from './InputField';
 
 export const RegisterForm: React.FC = () => {
+  const { register, loginWithGoogle, isLoading } = useAuth();
+  const [, response, promptAsync] = useGoogleAuth();
+  
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleRegister = () => {
+  // Handle Google auth response
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const handleGoogleResponse = async () => {
+        setIsSubmitting(true);
+        try {
+          const googleResult = await GoogleSignInService.processGoogleAuthResult(response.authentication);
+          
+          if (googleResult) {
+            const loginResult = await loginWithGoogle(googleResult.idToken);
+            
+            if (loginResult.success) {
+              Alert.alert(
+                'Welcome to Nusavarta!',
+                'Your account has been created successfully.',
+                [{ text: 'OK', onPress: () => router.replace('/(tabs)') }]
+              );
+            } else {
+              Alert.alert('Registration Failed', loginResult.error || 'Google registration failed');
+            }
+          } else {
+            Alert.alert('Error', 'Google authentication failed');
+          }
+        } catch (error) {
+          console.error('Google registration error:', error);
+          Alert.alert('Error', 'Failed to register with Google. Please try again.');
+        } finally {
+          setIsSubmitting(false);
+        }
+      };
+
+      handleGoogleResponse();
+    }
+  }, [response, loginWithGoogle]);
+
+  const handleGoogleRegister = async () => {
+    try {
+      await promptAsync();
+    } catch (error) {
+      console.error('Google Sign-In error:', error);
+      Alert.alert('Error', 'Google Sign-In failed. Please try again.');
+    }
+  };
+
+  const handleRegister = async () => {
+    if (isSubmitting || isLoading) return;
+
+    // Basic validation
     if (!firstName.trim()) {
       Alert.alert('Error', 'First name is required');
       return;
@@ -41,9 +94,44 @@ export const RegisterForm: React.FC = () => {
       Alert.alert('Error', 'Password must be at least 6 characters long');
       return;
     }
-    
-    console.log('Register pressed');
-    router.replace('/(tabs)');
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      Alert.alert('Error', 'Please enter a valid email address');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const result = await register({
+        email: email.trim(),
+        password,
+        firstName: firstName.trim(),
+        lastName: lastName.trim()
+      });
+
+      if (result.success) {
+        Alert.alert(
+          'Success!', 
+          'Account created successfully! You can now start exploring NusaVarta.',
+          [
+            {
+              text: 'Get Started',
+              onPress: () => router.replace('/(tabs)')
+            }
+          ]
+        );
+      } else {
+        Alert.alert('Registration Failed', result.error || 'An error occurred during registration');
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      Alert.alert('Error', 'An unexpected error occurred. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleLogin = () => {
@@ -111,13 +199,48 @@ export const RegisterForm: React.FC = () => {
 
       {/* Register button */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={handleRegister} style={styles.registerButtonContainer}>
+        <TouchableOpacity 
+          onPress={handleRegister} 
+          style={[
+            styles.registerButtonContainer,
+            (isSubmitting || isLoading) && styles.buttonDisabled
+          ]}
+          disabled={isSubmitting || isLoading}
+        >
           <LinearGradient
             colors={['rgba(79, 116, 68, 0.40)', 'rgba(79, 116, 68, 0.40)']}
             style={styles.registerButton}
           >
-            <Text style={styles.registerButtonText}>Register</Text>
+            {isSubmitting ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <Text style={styles.registerButtonText}>Register</Text>
+            )}
           </LinearGradient>
+        </TouchableOpacity>
+
+        {/* Google Sign-In button */}
+        <TouchableOpacity 
+          onPress={handleGoogleRegister} 
+          style={[
+            styles.googleButtonContainer,
+            (isSubmitting || isLoading) && styles.buttonDisabled
+          ]}
+          disabled={isSubmitting || isLoading}
+        >
+          <View style={styles.googleButton}>
+            {isSubmitting ? (
+              <ActivityIndicator size="small" color="#666666" />
+            ) : (
+              <>
+                <Image 
+                  source={{ uri: 'https://developers.google.com/identity/images/g-logo.png' }}
+                  style={styles.googleIcon}
+                />
+                <Text style={styles.googleButtonText}>Continue with Google</Text>
+              </>
+            )}
+          </View>
         </TouchableOpacity>
 
         {/* Login link */}
@@ -246,5 +369,34 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     lineHeight: 16.8,
     letterSpacing: -0.12,
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  googleButtonContainer: {
+    width: '100%',
+    marginTop: 12,
+  },
+  googleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    gap: 12,
+  },
+  googleIcon: {
+    width: 20,
+    height: 20,
+  },
+  googleButtonText: {
+    color: '#333333',
+    fontSize: 16,
+    fontWeight: '500',
+    lineHeight: 24,
   },
 });

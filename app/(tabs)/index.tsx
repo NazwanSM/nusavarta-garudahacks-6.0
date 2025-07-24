@@ -5,6 +5,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
 import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 
 // Data tidak diubah
 const landmarks = [
@@ -113,6 +114,11 @@ export default function HomeScreen() {
                     />
                     <View style={styles.headerContent}>
                         <TouchableOpacity style={styles.locationButton}>
+                            <BlurView
+                                intensity={25}
+                                tint="light"
+                                style={StyleSheet.absoluteFill} // Membuat blur mengisi seluruh tombol
+                            />
                             <Feather name="map-pin" size={16} color="white" />
                             <Text style={styles.locationText}>Institut Teknologi Bandung</Text>
                         </TouchableOpacity>
@@ -152,7 +158,16 @@ const styles = StyleSheet.create({
     headerContainer: { height: 300, width: '100%', },
     headerImage: { width: '100%', height: '100%', position: 'absolute', },
     headerContent: { flex: 1, paddingHorizontal: 20, paddingTop: 60, },
-    locationButton: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255, 255, 255, 0.2)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, alignSelf: 'flex-start', },
+    locationButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        // backgroundColor: 'rgba(255, 255, 255, 0.2)', // Dihapus, digantikan oleh BlurView
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 20,
+        alignSelf: 'flex-start',
+        overflow: 'hidden', // Penting agar blur tidak keluar dari border radius
+    },
     locationText: { color: 'white', marginLeft: 8, fontWeight: '600', },
     greetingText: { fontSize: 28, fontWeight: 'bold', color: 'white', marginTop: 85, },
     subGreetingText: { fontSize: 24, color: 'white', },

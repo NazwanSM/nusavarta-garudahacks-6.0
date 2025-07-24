@@ -23,7 +23,7 @@ export function TabBarIcon({ source, color, focused }: TabBarIconProps) {
 
 const styles = StyleSheet.create({
     icon: {
-        width: 28,
-        height: 28,
+        width: 24,
+        height: 24,
     },
 });

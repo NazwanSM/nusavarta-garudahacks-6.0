@@ -1,30 +1,145 @@
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import React, { useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useAuth } from '../../context/AuthContext';
+import { processGoogleSignIn, useGoogleAuth } from '../../services/googleSignInService';
 import { InputField } from './InputField';
 
 export const LoginForm: React.FC = () => {
-  const [email, setEmail] = useState('Loisbecket@gmail.com');
-  const [password, setPassword] = useState('*******');
+  const { login, resetPassword, getSavedCredentials, isLoading } = useAuth();
+  const [request, response, promptAsync] = useGoogleAuth();
+  
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleLogin = () => {
-    // Handle login logic here
-    console.log('Login pressed');
-    // Navigate to main app after successful login
-    router.replace('/(tabs)');
+  // Load saved credentials on component mount
+  useEffect(() => {
+    const loadSavedCredentials = async () => {
+      try {
+        const saved = await getSavedCredentials();
+        if (saved.rememberMe && saved.email) {
+          setEmail(saved.email);
+          setRememberMe(true);
+        }
+      } catch (error) {
+        console.error('Error loading saved credentials:', error);
+      }
+    };
+
+    loadSavedCredentials();
+  }, [getSavedCredentials]);
+
+  // Handle Google auth response
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const handleGoogleResponse = async () => {
+        setIsSubmitting(true);
+        try {
+          // Use the new processGoogleSignIn function
+          const result = await processGoogleSignIn(response);
+          
+          if (result.success) {
+            router.replace('/(tabs)');
+          } else {
+            Alert.alert('Login Failed', result.error || 'Google login failed');
+          }
+        } catch (error) {
+          console.error('Google login error:', error);
+          Alert.alert('Error', 'Google login failed. Please try again.');
+        } finally {
+          setIsSubmitting(false);
+        }
+      };
+
+      handleGoogleResponse();
+    }
+  }, [response]);
+
+  const handleLogin = async () => {
+    if (isSubmitting || isLoading) return;
+
+    // Basic validation
+    if (!email.trim()) {
+      Alert.alert('Error', 'Please enter your email address');
+      return;
+    }
+
+    if (!password.trim()) {
+      Alert.alert('Error', 'Please enter your password');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const result = await login({
+        email: email.trim(),
+        password,
+        rememberMe
+      });
+
+      if (result.success) {
+        // Navigate to main app after successful login
+        router.replace('/(tabs)');
+      } else {
+        Alert.alert('Login Failed', result.error || 'An error occurred during login');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      Alert.alert('Error', 'An unexpected error occurred. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const handleGoogleLogin = () => {
-    // Handle Google login logic here
-    console.log('Google login pressed');
+  const handleGoogleLogin = async () => {
+    if (isSubmitting || isLoading) return;
+
+    try {
+      // Check if Google auth is configured and promptAsync is available
+      if (!request || !promptAsync) {
+        Alert.alert(
+          'Configuration Error', 
+          'Google Sign-In is not properly configured. The OAuth client IDs must be valid Google Cloud Console client IDs ending with .apps.googleusercontent.com'
+        );
+        return;
+      }
+
+      // Prompt for Google authentication
+      if (typeof promptAsync === 'function') {
+        await promptAsync();
+      }
+      
+    } catch (error) {
+      console.error('Google login error:', error);
+      Alert.alert('Error', 'Failed to initiate Google login. Please try again.');
+    }
   };
 
-  const handleForgotPassword = () => {
-    // Handle forgot password logic here
-    console.log('Forgot password pressed');
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      Alert.alert('Email Required', 'Please enter your email address first');
+      return;
+    }
+
+    try {
+      const result = await resetPassword(email.trim());
+      if (result.success) {
+        Alert.alert(
+          'Password Reset', 
+          'Password reset instructions have been sent to your email address'
+        );
+      } else {
+        Alert.alert('Error', result.error || 'Failed to send password reset email');
+      }
+    } catch (error) {
+      console.error('Reset password error:', error);
+      Alert.alert('Error', 'An error occurred. Please try again.');
+    }
   };
 
   const handleSignUp = () => {
@@ -88,12 +203,23 @@ export const LoginForm: React.FC = () => {
 
       {/* Login button */}
       <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={handleLogin} style={styles.loginButtonContainer}>
+        <TouchableOpacity 
+          onPress={handleLogin} 
+          style={[
+            styles.loginButtonContainer,
+            (isSubmitting || isLoading) && styles.buttonDisabled
+          ]}
+          disabled={isSubmitting || isLoading}
+        >
           <LinearGradient
             colors={['rgba(79, 116, 68, 0.40)', 'rgba(79, 116, 68, 0.40)']}
             style={styles.loginButton}
           >
-            <Text style={styles.loginButtonText}>Log In</Text>
+            {isSubmitting ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : (
+              <Text style={styles.loginButtonText}>Log In</Text>
+            )}
           </LinearGradient>
         </TouchableOpacity>
 
@@ -105,8 +231,19 @@ export const LoginForm: React.FC = () => {
         </View>
 
         {/* Google login button */}
-        <TouchableOpacity onPress={handleGoogleLogin} style={styles.googleButton}>
-          <Ionicons name="logo-google" size={18} color="#4285F4" />
+        <TouchableOpacity 
+          onPress={handleGoogleLogin} 
+          style={[
+            styles.googleButton,
+            (isSubmitting || isLoading || !request) && styles.buttonDisabled
+          ]}
+          disabled={isSubmitting || isLoading || !request}
+        >
+          {isSubmitting ? (
+            <ActivityIndicator size="small" color="#4285F4" />
+          ) : (
+            <Ionicons name="logo-google" size={18} color="#4285F4" />
+          )}
         </TouchableOpacity>
       </View>
 
@@ -319,5 +456,8 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     lineHeight: 16.8,
     letterSpacing: -0.12,
+  },
+  buttonDisabled: {
+    opacity: 0.6,
   },
 });

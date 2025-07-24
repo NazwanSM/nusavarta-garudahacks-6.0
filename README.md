@@ -1,4 +1,4 @@
-# Welcome to your Expo app 👋
+# Nusavarta - GarudaHacks 6.0 🇮🇩
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
@@ -10,7 +10,15 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npm install
    ```
 
-2. Start the app
+2. Set up environment variables
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Then edit the `.env` file with your actual Firebase and Google OAuth configuration. See [ENV_SETUP.md](./ENV_SETUP.md) for detailed instructions.
+
+3. Start the app
 
    ```bash
    npx expo start
@@ -24,6 +32,26 @@ In the output, you'll find options to open the app in a
 - [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+
+## Features
+
+- 🔐 **Authentication**: Email/password and Google Sign-In with Firebase
+- 🔒 **Secure Configuration**: Environment variables for sensitive data
+- 📱 **Cross-Platform**: Works on iOS, Android, and Web
+- 🎨 **Modern UI**: Clean design with gradient backgrounds
+- 🗃️ **Firestore Integration**: User profile management
+- 📧 **Password Reset**: Email-based password recovery
+
+## Environment Configuration
+
+This app uses environment variables for secure configuration management. All sensitive data like API keys and OAuth client IDs are stored in a `.env` file that is not committed to version control.
+
+**Required Environment Variables:**
+- Firebase configuration (API key, project ID, etc.)
+- Google OAuth client IDs (Web, iOS, Android)
+- EAS project ID
+
+See [ENV_SETUP.md](./ENV_SETUP.md) for complete setup instructions.
 
 ## Get a fresh project
 
