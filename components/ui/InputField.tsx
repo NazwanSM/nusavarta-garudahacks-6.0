@@ -1,11 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
 interface InputFieldProps {
   value: string;
   onChangeText: (text: string) => void;
   placeholder?: string;
+  label?: string;
   secureTextEntry?: boolean;
   showPasswordToggle?: boolean;
   style?: any;
@@ -15,6 +16,7 @@ export const InputField: React.FC<InputFieldProps> = ({
   value,
   onChangeText,
   placeholder,
+  label,
   secureTextEntry = false,
   showPasswordToggle = false,
   style,
@@ -26,29 +28,41 @@ export const InputField: React.FC<InputFieldProps> = ({
   };
 
   return (
-    <View style={[styles.container, style]}>
-      <TextInput
-        style={styles.input}
-        value={value}
-        onChangeText={onChangeText}
-        placeholder={placeholder}
-        secureTextEntry={secureTextEntry && !isPasswordVisible}
-        placeholderTextColor="#ACB5BB"
-      />
-      {showPasswordToggle && (
-        <TouchableOpacity onPress={togglePasswordVisibility} style={styles.eyeIcon}>
-          <Ionicons
-            name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
-            size={16}
-            color="#ACB5BB"
-          />
-        </TouchableOpacity>
-      )}
+    <View style={[style]}>
+      {label && <Text style={styles.label}>{label}</Text>}
+      <View style={styles.container}>
+        <TextInput
+          style={styles.input}
+          value={value}
+          onChangeText={onChangeText}
+          placeholder={placeholder}
+          secureTextEntry={secureTextEntry && !isPasswordVisible}
+          placeholderTextColor="#ACB5BB"
+        />
+        {showPasswordToggle && (
+          <TouchableOpacity onPress={togglePasswordVisibility} style={styles.eyeIcon}>
+            <Ionicons
+              name={isPasswordVisible ? 'eye-off-outline' : 'eye-outline'}
+              size={16}
+              color="#ACB5BB"
+            />
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  label: {
+    color: '#6C7278',
+    fontFamily: 'Inter',
+    fontSize: 12,
+    fontWeight: '500',
+    lineHeight: 16.8,
+    letterSpacing: -0.12,
+    marginBottom: 6,
+  },
   container: {
     flexDirection: 'row',
     alignItems: 'center',

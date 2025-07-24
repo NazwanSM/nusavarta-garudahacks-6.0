@@ -89,7 +89,7 @@ export const LoginForm: React.FC = () => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity onPress={handleLogin} style={styles.loginButtonContainer}>
           <LinearGradient
-            colors={['rgba(79, 116, 68, 0.40)', 'rgba(79, 116, 68, 0.60)']}
+            colors={['rgba(79, 116, 68, 0.40)', 'rgba(79, 116, 68, 0.40)']}
             style={styles.loginButton}
           >
             <Text style={styles.loginButtonText}>Log In</Text>
@@ -111,7 +111,7 @@ export const LoginForm: React.FC = () => {
 
       {/* Sign up link */}
       <View style={styles.signUpContainer}>
-        <Text style={styles.signUpText}>Don't have an account?</Text>
+        <Text style={styles.signUpText}>Don&apos;t have an account?</Text>
         <TouchableOpacity onPress={handleSignUp}>
           <Text style={styles.signUpLink}>Sign Up</Text>
         </TouchableOpacity>
