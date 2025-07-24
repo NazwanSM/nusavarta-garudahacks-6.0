@@ -72,21 +72,21 @@ export const RegisterForm: React.FC = () => {
           label="First Name"
           value={firstName}
           onChangeText={setFirstName}
-          placeholder="Lois"
+          placeholder="Enter your first name"
           style={styles.inputField}
         />
         <InputField
           label="Second Name"
           value={lastName}
           onChangeText={setLastName}
-          placeholder="Becket"
+          placeholder="Enter your last name"
           style={styles.inputField}
         />
         <InputField
           label="Email"
           value={email}
           onChangeText={setEmail}
-          placeholder="loisbecket@gmail.com"
+          placeholder="yourname@email.com"
           style={styles.inputField}
         />
         <InputField

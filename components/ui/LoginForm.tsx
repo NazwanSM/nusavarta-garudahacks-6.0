@@ -6,14 +6,12 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { InputField } from './InputField';
 
 export const LoginForm: React.FC = () => {
-  const [email, setEmail] = useState('Loisbecket@gmail.com');
-  const [password, setPassword] = useState('*******');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [rememberMe, setRememberMe] = useState(false);
 
   const handleLogin = () => {
-    // Handle login logic here
     console.log('Login pressed');
-    // Navigate to main app after successful login
     router.replace('/(tabs)');
   };
 
@@ -30,6 +28,7 @@ export const LoginForm: React.FC = () => {
   const handleSignUp = () => {
     // Handle sign up navigation logic here
     console.log('Sign up pressed');
+    router.push('/register');
   };
 
   return (
@@ -53,13 +52,13 @@ export const LoginForm: React.FC = () => {
         <InputField
           value={email}
           onChangeText={setEmail}
-          placeholder="yourname@gmail.com"
+          placeholder="yourname@email.com"
           style={styles.inputField}
         />
         <InputField
           value={password}
           onChangeText={setPassword}
-          placeholder="Password"
+          placeholder="•••••••"
           secureTextEntry={true}
           showPasswordToggle={true}
           style={styles.inputField}
@@ -74,7 +73,7 @@ export const LoginForm: React.FC = () => {
         >
           <View style={[styles.checkbox, rememberMe && styles.checkboxChecked]}>
             {rememberMe && (
-              <Ionicons name="checkmark" size={12} color="#FFFFFF" />
+              <Ionicons name="checkmark" size={9} color="#FFFFFF" />
             )}
           </View>
           <Text style={styles.rememberMeText}>Remember me</Text>
