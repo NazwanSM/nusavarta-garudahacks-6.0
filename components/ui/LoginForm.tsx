@@ -169,13 +169,13 @@ export const LoginForm: React.FC = () => {
         <InputField
           value={email}
           onChangeText={setEmail}
-          placeholder="yourname@gmail.com"
+          placeholder="yourname@email.com"
           style={styles.inputField}
         />
         <InputField
           value={password}
           onChangeText={setPassword}
-          placeholder="Password"
+          placeholder="•••••••"
           secureTextEntry={true}
           showPasswordToggle={true}
           style={styles.inputField}
@@ -190,7 +190,7 @@ export const LoginForm: React.FC = () => {
         >
           <View style={[styles.checkbox, rememberMe && styles.checkboxChecked]}>
             {rememberMe && (
-              <Ionicons name="checkmark" size={12} color="#FFFFFF" />
+              <Ionicons name="checkmark" size={9} color="#FFFFFF" />
             )}
           </View>
           <Text style={styles.rememberMeText}>Remember me</Text>

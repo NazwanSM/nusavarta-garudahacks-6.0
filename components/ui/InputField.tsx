@@ -21,7 +21,7 @@ export const InputField: React.FC<InputFieldProps> = ({
   showPasswordToggle = false,
   style,
 }) => {
-  const [isPasswordVisible, setIsPasswordVisible] = useState(!secureTextEntry);
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
