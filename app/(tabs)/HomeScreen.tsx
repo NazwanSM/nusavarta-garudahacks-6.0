@@ -1,26 +1,26 @@
-import React, { useState, useRef, useEffect} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-  StyleSheet,
-  Image,
-  View,
-  TextInput,
-  TouchableOpacity,
-  Platform,
-  KeyboardAvoidingView,
-  ScrollView,
-  LayoutAnimation,
-  UIManager,
-  Text, // Import Text biasa untuk styling
+    Image,
+    KeyboardAvoidingView,
+    LayoutAnimation,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    UIManager,
+    View,
 } from 'react-native';
 
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { Feather } from '@expo/vector-icons';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, withDelay } from 'react-native-reanimated';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { Feather } from '@expo/vector-icons';
+import Animated, { useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Mengaktifkan LayoutAnimation di Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -193,7 +193,13 @@ export default function HomeScreen() {
           
           <View style={[styles.inputContainer, { borderTopColor: themeColors.border, backgroundColor: themeColors.background, paddingHorizontal: 0, marginTop: 20 }]}>
               <TextInput
-                  // ... (properti TextInput tidak berubah)
+                style={[styles.textInput, { backgroundColor: themeColors.secondary, color: themeColors.text }]}
+                placeholder="Tanyakan pada Budayana..."
+                placeholderTextColor="#999"
+                value={initialInput}
+                onChangeText={setInitialInput}
+                returnKeyType="send"
+                onSubmitEditing={handleInitialSend}
               />
               <TouchableOpacity style={[styles.sendButton, { backgroundColor: themeColors.tint }]} onPress={handleInitialSend}>
                   <Feather name="arrow-up" size={20} color="white" />

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "234527295517",
+    "project_id": "garudahacks-6",
+    "storage_bucket": "garudahacks-6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:234527295517:android:a4c55310dd793343169ef4",
+        "android_client_info": {
+          "package_name": "com.banana.nusavarta"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "234527295517-fn85qkkar6scrst4nt21q0lq9lp3i0l1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA8U5X4G5fzEA210hvpBcn7cMCR7TwN5bQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "234527295517-fn85qkkar6scrst4nt21q0lq9lp3i0l1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

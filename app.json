@@ -1,17 +1,29 @@
 {
   "expo": {
     "name": "GarudaHacks 6.0",
-    "slug": "GarudaHacks 6.0",
+    "slug": "nusavarta",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "garudahacks60",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "splash": {
+      "image": "./assets/images/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.relaxxyy.nusavartagarudahacks",
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
+      "package": "com.banana.nusavarta",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -38,6 +50,20 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "ef83a121-078f-4545-b2e5-88cb7ac0f906"
+      },
+      "firebaseApiKey": "AIzaSy... (Salin dari Firebase Console Anda)",
+      "firebaseAuthDomain": "garudahacks-6.firebaseapp.com",
+      "firebaseProjectId": "garudahacks-6",
+      "firebaseStorageBucket": "garudahacks-6.appspot.com",
+      "firebaseMessagingSenderId": "234527295517",
+      "firebaseAppId": "1:234527295517:web:...",
+      "firebaseMeasurementId": "G-FWM9W508KY"
+    },
+    "owner": "relaxxyy"
   }
 }

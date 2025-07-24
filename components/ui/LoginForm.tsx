@@ -89,7 +89,7 @@ export const LoginForm: React.FC = () => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity onPress={handleLogin} style={styles.loginButtonContainer}>
           <LinearGradient
-            colors={['rgba(79, 116, 68, 0.40)']}
+            colors={['rgba(79, 116, 68, 0.40)', 'rgba(79, 116, 68, 0.60)']}
             style={styles.loginButton}
           >
             <Text style={styles.loginButtonText}>Log In</Text>
