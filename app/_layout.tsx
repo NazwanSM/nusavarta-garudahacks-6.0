@@ -39,6 +39,7 @@ export default function RootLayout() {
           {/* Halaman (tabs) akan diakses melalui navigasi dari index.tsx */}
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
+          <Stack.Screen name="login" options={{ headerShown: false }} />
         </Stack>
       </SafeAreaProvider>
     </ThemeProvider>

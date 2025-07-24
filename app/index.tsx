@@ -1,11 +1,11 @@
 // app/index.tsx
 
-import React, { useEffect } from 'react';
-import { StyleSheet, View, Image } from 'react-native';
-import { router } from 'expo-router';
-import Animated, { useSharedValue, useAnimatedStyle, withTiming, withDelay } from 'react-native-reanimated';
-import { useColorScheme } from '@/hooks/useColorScheme';
 import { Colors } from '@/constants/Colors';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { router } from 'expo-router';
+import { useEffect } from 'react';
+import { StyleSheet, View } from 'react-native';
+import Animated, { useAnimatedStyle, useSharedValue, withDelay, withTiming } from 'react-native-reanimated';
 
 // Ganti dengan path gambar aset Anda
 const LOGO_IMAGE = require('@/assets/images/logo-nusavarta.png');
@@ -37,10 +37,10 @@ export default function SplashScreen() {
         textOpacity.value = withDelay(500, withTiming(1, { duration: 800 }));
         textTranslateY.value = withDelay(500, withTiming(0, { duration: 800 }));
 
-        // Setelah animasi selesai, pindah ke aplikasi utama
+        // Setelah animasi selesai, pindah ke halaman login
         const timer = setTimeout(() => {
         // 'replace' akan mengganti halaman splash screen, jadi pengguna tidak bisa kembali ke sini
-        router.replace('/(tabs)');
+        router.replace('./login');
         }, 2500); // Total durasi splash screen
 
         return () => clearTimeout(timer); // Membersihkan timer jika komponen di-unmount
