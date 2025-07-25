@@ -3,8 +3,9 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { Feather } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
-import React from 'react';
-import { Animated, FlatList, Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import React, { useRef, useState } from 'react';
+import { Animated, Easing, FlatList, Image, Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, Vibration, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // dummy
@@ -44,14 +45,14 @@ const cultures = [
         title: 'Sanggar Supubaka', 
         location: 'Sanggar Supubaka, Jl. Budaya No.15, Bandung',
         image: require('@/assets/images/sanggar.png'),
-        description: 'Sanggar Supubaka adalah pusat kebudayaan tradisional yang melestarikan seni dan budaya Sunda.'
+        description: 'Sanggar Supubaka adalah pusat kebudayaan tradisional yang melestarikan seni dan budaya Sunda. Di sini Anda dapat menyaksikan berbagai pertunjukan tari tradisional, musik angklung, dan berbagai kesenian lokal yang telah turun-temurun..'
     },
     { 
         id: '3', 
         title: 'Sanggar Supubaka', 
         location: 'Sanggar Supubaka, Jl. Budaya No.15, Bandung',
         image: require('@/assets/images/sanggar.png'),
-        description: 'Sanggar Supubaka adalah pusat kebudayaan tradisional yang melestarikan seni dan budaya Sunda.'
+        description: 'Sanggar Supubaka adalah pusat kebudayaan tradisional yang melestarikan seni dan budaya Sunda. Di sini Anda dapat menyaksikan berbagai pertunjukan tari tradisional, musik angklung, dan berbagai kesenian lokal yang telah turun-temurun..'
     },
 ];
 const museums = [
@@ -67,14 +68,14 @@ const museums = [
         title: 'Museum Geologi', 
         location: 'Museum Geologi, Jl. Diponegoro No.57, Cihaur Geulis, Kec. Cibeunying Kaler, Kota Bandung',
         image: require('@/assets/images/museum.png'),
-        description: 'Selamat datang di Museum Geologi Bandung! Di sinilah perjalanan kita melintasi lorong waktu dimulai.'
+        description: 'Selamat datang di Museum Geologi Bandung! Di sinilah perjalanan kita melintasi lorong waktu dimulai, jauh sebelum ada kota, bahkan sebelum ada manusia. Museum ini bukan sekedar tempat menyimpan batu dan fosil, tapi merupakan gerbang menuju sejarah bumi dan kehidupan yang membentuk kepulauan kita. Museum ini bukan sekedar tempat menyimpan benda-benda tua, melainkan sebuah buku raksasa yang menceritakan berbagai dinamis dan luar biasanya planet yang kita tinggali di Mari kita jelajahi sejarah kehidupan!.'
     },
     { 
         id: '3', 
         title: 'Museum Geologi', 
         location: 'Museum Geologi, Jl. Diponegoro No.57, Cihaur Geulis, Kec. Cibeunying Kaler, Kota Bandung',
         image: require('@/assets/images/museum.png'),
-        description: 'Selamat datang di Museum Geologi Bandung! Di sinilah perjalanan kita melintasi lorong waktu dimulai.'
+        description: 'Selamat datang di Museum Geologi Bandung! Di sinilah perjalanan kita melintasi lorong waktu dimulai, jauh sebelum ada kota, bahkan sebelum ada manusia. Museum ini bukan sekedar tempat menyimpan batu dan fosil, tapi merupakan gerbang menuju sejarah bumi dan kehidupan yang membentuk kepulauan kita. Museum ini bukan sekedar tempat menyimpan benda-benda tua, melainkan sebuah buku raksasa yang menceritakan berbagai dinamis dan luar biasanya planet yang kita tinggali di Mari kita jelajahi sejarah kehidupan!.'
     },
 ];
 
@@ -157,6 +158,7 @@ const Section = ({ title, data, onItemPress }: {
 export default function HomeScreen() {
     const colorScheme = useColorScheme();
     const themeColors = Colors[colorScheme ?? 'light'];
+    const router = useRouter();
 
     // --- State untuk modal ---
     const [modalVisible, setModalVisible] = React.useState(false);
@@ -166,6 +168,69 @@ export default function HomeScreen() {
         image: any, 
         description: string
     } | null>(null);
+
+    // --- State untuk search input ---
+    const [searchText, setSearchText] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    
+    // Animation refs
+    const submitAnim = useRef(new Animated.Value(0)).current;
+    const contentFadeAnim = useRef(new Animated.Value(0)).current;
+    
+    // Separate animation refs for non-native animations (layout properties)
+    const focusScaleAnim = useRef(new Animated.Value(1)).current;
+    const focusBorderAnim = useRef(new Animated.Value(0)).current;
+    const focusShadowAnim = useRef(new Animated.Value(0)).current;
+    
+    // Separate ref for submit pulse animation (non-native)
+    const submitPulseAnim = useRef(new Animated.Value(1)).current;
+    
+    // Start content fade-in animation on mount
+    React.useEffect(() => {
+        Animated.timing(contentFadeAnim, {
+            toValue: 1,
+            duration: 800,
+            easing: Easing.out(Easing.quad),
+            useNativeDriver: true,
+        }).start();
+    }, [contentFadeAnim]);
+
+    // Handler untuk submit search
+    const handleSearchSubmit = () => {
+        if (searchText.trim()) {
+            // Add haptic feedback
+            Vibration.vibrate(50);
+            setIsSubmitting(true);
+            
+            // Start submit animation sequence (using dedicated submit animation)
+            Animated.sequence([
+                // Scale pulse effect using dedicated non-native animation
+                Animated.timing(submitPulseAnim, {
+                    toValue: 1.1,
+                    duration: 150,
+                    easing: Easing.out(Easing.quad),
+                    useNativeDriver: false,
+                }),
+                Animated.timing(submitPulseAnim, {
+                    toValue: 1,
+                    duration: 200,
+                    easing: Easing.inOut(Easing.quad),
+                    useNativeDriver: false,
+                }),
+            ]).start(() => {
+                // Navigate after animation completes
+                router.push({
+                    pathname: '/chat',
+                    params: { message: searchText.trim() }
+                });
+                
+                // Reset states
+                setSearchText('');
+                setIsSubmitting(false);
+                submitAnim.setValue(0);
+            });
+        }
+    };
 
     // Handler untuk membuka modal
     const handleItemPress = (item: any) => {
@@ -183,44 +248,81 @@ export default function HomeScreen() {
     const focusAnim = React.useRef(new Animated.Value(0)).current;
 
     const handleFocus = () => {
-        Animated.timing(focusAnim, {
-            toValue: 1,
-            duration: 300,
-            useNativeDriver: false,
-        }).start();
+        Animated.parallel([
+            Animated.timing(focusAnim, {
+                toValue: 1,
+                duration: 300,
+                useNativeDriver: false,
+            }),
+            Animated.timing(focusScaleAnim, {
+                toValue: 1.05,
+                duration: 300,
+                useNativeDriver: false,
+            }),
+            Animated.timing(focusBorderAnim, {
+                toValue: 1,
+                duration: 300,
+                useNativeDriver: false,
+            }),
+            Animated.timing(focusShadowAnim, {
+                toValue: 1,
+                duration: 300,
+                useNativeDriver: false,
+            }),
+        ]).start();
     };
 
     const handleBlur = () => {
-        Animated.timing(focusAnim, {
-            toValue: 0,
-            duration: 300,
-            useNativeDriver: false,
-        }).start();
+        Animated.parallel([
+            Animated.timing(focusAnim, {
+                toValue: 0,
+                duration: 300,
+                useNativeDriver: false,
+            }),
+            Animated.timing(focusScaleAnim, {
+                toValue: 1,
+                duration: 300,
+                useNativeDriver: false,
+            }),
+            Animated.timing(focusBorderAnim, {
+                toValue: 0,
+                duration: 300,
+                useNativeDriver: false,
+            }),
+            Animated.timing(focusShadowAnim, {
+                toValue: 0,
+                duration: 300,
+                useNativeDriver: false,
+            }),
+        ]).start();
     };
 
     const animatedSearchBoxStyle = {
         transform: [
-            { translateY: styles.searchBoxContainer.transform[0].translateY }, 
+            { translateY: styles.searchBoxContainer.transform[0].translateY },
             {
-                scale: focusAnim.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [1, 1.05], // Sedikit perbesaran
-                }),
+                scale: Animated.multiply(focusScaleAnim, submitPulseAnim),
             },
         ],
-        borderColor: focusAnim.interpolate({
+        borderColor: focusBorderAnim.interpolate({
             inputRange: [0, 1],
             outputRange: [themeColors.background, 'rgba(79, 116, 68, 0.4)'],
         }),
-        shadowOpacity: focusAnim.interpolate({
-            inputRange: [0, 1],
-            outputRange: [0.1, 0.2],
-        }),
-        shadowRadius: focusAnim.interpolate({
+        shadowOpacity: Animated.add(
+            focusShadowAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.1, 0.2],
+            }),
+            submitAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, 0.15], // Extra shadow during submit
+            })
+        ),
+        shadowRadius: focusShadowAnim.interpolate({
             inputRange: [0, 1],
             outputRange: [8, 12],
         }),
-        elevation: focusAnim.interpolate({
+        elevation: focusShadowAnim.interpolate({
             inputRange: [0, 1],
             outputRange: [5, 10],
         }),
@@ -249,7 +351,7 @@ export default function HomeScreen() {
                             <Feather name="map-pin" size={16} color="white" />
                             <Text style={styles.locationText}>Institut Teknologi Bandung</Text>
                         </TouchableOpacity>
-                        <Text style={styles.greetingText}>Hai, Garudie!</Text>
+                        <Text style={styles.greetingText}>Hai, Lala!</Text>
                         <Text style={styles.subGreetingText}>Where are you going today?</Text>
                     </View>
                 </View>
@@ -262,14 +364,32 @@ export default function HomeScreen() {
                             placeholder="Ask nusaAI ..."
                             placeholderTextColor="#8E8E93"
                             style={styles.searchInput}
+                            value={searchText}
+                            onChangeText={setSearchText}
                             onFocus={handleFocus}
                             onBlur={handleBlur}
+                            onSubmitEditing={handleSearchSubmit}
+                            returnKeyType="search"
                         />
                     </Animated.View>
 
-                    <Section title="Surrounding Landmarks" data={landmarks} onItemPress={handleItemPress} />
-                    <Section title="Surrounding Cultures" data={cultures} onItemPress={handleItemPress} />
-                    <Section title="Surrounding Museums" data={museums} onItemPress={handleItemPress} />
+                    <Animated.View 
+                        style={[
+                            { opacity: contentFadeAnim },
+                            { 
+                                transform: [{ 
+                                    translateY: contentFadeAnim.interpolate({
+                                        inputRange: [0, 1],
+                                        outputRange: [30, 0],
+                                    }) 
+                                }] 
+                            }
+                        ]}
+                    >
+                        <Section title="Surrounding Landmarks" data={landmarks} onItemPress={handleItemPress} />
+                        <Section title="Surrounding Cultures" data={cultures} onItemPress={handleItemPress} />
+                        <Section title="Surrounding Museums" data={museums} onItemPress={handleItemPress} />
+                    </Animated.View>
                 </View>
             </ScrollView>
             

@@ -42,7 +42,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore" // Ganti 'explore' dengan 'chat' jika Anda punya halaman chat
+        name="chat"
         options={{
           title: 'Chat',
           tabBarIcon: ({ color, focused }) => (
@@ -55,12 +55,25 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="HomeScreen" // Ganti 'explore' dengan 'chat' jika Anda punya halaman chat
+        name="explore" // Keep explore as history page
         options={{
           title: 'History',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               source={require('@/assets/images/history-icon.png')} // Ganti dengan path ikon Anda
+              color={color}
+              focused={focused}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Profile',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              source={require('@/assets/images/profile-icon.png')} // Ganti dengan path ikon Anda
               color={color}
               focused={focused}
             />

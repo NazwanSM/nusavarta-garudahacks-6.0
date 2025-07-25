@@ -1,110 +1,245 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { Colors } from '@/constants/Colors';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import { Feather } from '@expo/vector-icons';
+import React from 'react';
+import {
+  SafeAreaView,
+  ScrollView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+type ChatHistory = {
+  id: number;
+  title: string;
+  lastMessage: string;
+  timestamp: Date;
+  messageCount: number;
+};
 
-export default function TabTwoScreen() {
+export default function HistoryScreen() {
+  const colorScheme = useColorScheme();
+  const themeColors = Colors[colorScheme ?? 'light'];
+
+  const chatHistory: ChatHistory[] = [
+    {
+      id: 1,
+      title: 'Museum di Jakarta',
+      lastMessage: 'Terima kasih atas rekomendasinya!',
+      timestamp: new Date('2024-01-01T10:30:00'),
+      messageCount: 12,
+    },
+    {
+      id: 2,
+      title: 'Wisata Budaya Yogyakarta',
+      lastMessage: 'Saya akan pergi ke Borobudur besok',
+      timestamp: new Date('2024-01-01T09:15:00'),
+      messageCount: 8,
+    },
+    {
+      id: 3,
+      title: 'Destinasi di Bali',
+      lastMessage: 'Apakah ada rekomendasi tempat makan?',
+      timestamp: new Date('2023-12-31T16:45:00'),
+      messageCount: 15,
+    },
+    {
+      id: 4,
+      title: 'Candi di Jawa Tengah',
+      lastMessage: 'Prambanan sangat indah!',
+      timestamp: new Date('2023-12-30T14:20:00'),
+      messageCount: 6,
+    },
+  ];
+
+  const formatDate = (date: Date) => {
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - date.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 1) return 'Today';
+    if (diffDays === 2) return 'Yesterday';
+    if (diffDays <= 7) return `${diffDays} days ago`;
+    
+    return date.toLocaleDateString('id-ID', { 
+      day: 'numeric', 
+      month: 'short' 
+    });
+  };
+
+  const handleChatPress = (chatId: number) => {
+    // Navigate to chat with history
+    console.log('Open chat:', chatId);
+  };
+
+  const handleDeleteChat = (chatId: number) => {
+    // Delete chat logic
+    console.log('Delete chat:', chatId);
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-            custom fonts such as this one.
-          </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
-            </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+    <SafeAreaView style={[styles.container, { backgroundColor: themeColors.background }]}>
+      <StatusBar barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'} />
+      
+      {/* Header */}
+      <View style={[styles.header, { backgroundColor: themeColors.background, borderBottomColor: themeColors.border }]}>
+        <Text style={[styles.headerTitle, { color: themeColors.text }]}>Chat History</Text>
+        <TouchableOpacity style={styles.headerButton}>
+          <Feather name="search" size={20} color={themeColors.icon} />
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView 
+        style={styles.content}
+        showsVerticalScrollIndicator={false}
+      >
+        {chatHistory.map((chat) => (
+          <TouchableOpacity
+            key={chat.id}
+            style={[styles.chatItem, { 
+              backgroundColor: themeColors.background,
+              borderBottomColor: themeColors.border 
+            }]}
+            onPress={() => handleChatPress(chat.id)}
+          >
+            <View style={styles.chatInfo}>
+              <View style={styles.chatHeader}>
+                <Text style={[styles.chatTitle, { color: themeColors.text }]} numberOfLines={1}>
+                  {chat.title}
+                </Text>
+                <Text style={[styles.chatTime, { color: themeColors.icon }]}>
+                  {formatDate(chat.timestamp)}
+                </Text>
+              </View>
+              
+              <View style={styles.chatDetails}>
+                <Text style={[styles.lastMessage, { color: themeColors.icon }]} numberOfLines={1}>
+                  {chat.lastMessage}
+                </Text>
+                <View style={styles.messageCount}>
+                  <Text style={styles.messageCountText}>{chat.messageCount}</Text>
+                </View>
+              </View>
+            </View>
+            
+            <TouchableOpacity 
+              style={styles.deleteButton}
+              onPress={() => handleDeleteChat(chat.id)}
+            >
+              <Feather name="trash-2" size={16} color="#FF6B6B" />
+            </TouchableOpacity>
+          </TouchableOpacity>
+        ))}
+        
+        {chatHistory.length === 0 && (
+          <View style={styles.emptyState}>
+            <Feather name="message-circle" size={48} color={themeColors.icon} />
+            <Text style={[styles.emptyTitle, { color: themeColors.text }]}>
+              No chat history yet
+            </Text>
+            <Text style={[styles.emptySubtitle, { color: themeColors.icon }]}>
+              Start a conversation with nusaAI to see your chat history here
+            </Text>
+          </View>
+        )}
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  container: {
+    flex: 1,
   },
-  titleContainer: {
+  header: {
     flexDirection: 'row',
-    gap: 8,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  headerButton: {
+    padding: 8,
+  },
+  content: {
+    flex: 1,
+  },
+  chatItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+  },
+  chatInfo: {
+    flex: 1,
+  },
+  chatHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  chatTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    flex: 1,
+    marginRight: 8,
+  },
+  chatTime: {
+    fontSize: 12,
+  },
+  chatDetails: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  lastMessage: {
+    fontSize: 14,
+    flex: 1,
+    marginRight: 8,
+  },
+  messageCount: {
+    backgroundColor: '#4CAF50',
+    borderRadius: 10,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    minWidth: 20,
+    alignItems: 'center',
+  },
+  messageCountText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  deleteButton: {
+    padding: 8,
+    marginLeft: 8,
+  },
+  emptyState: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 32,
+    paddingVertical: 48,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    textAlign: 'center',
+    lineHeight: 20,
   },
 });
